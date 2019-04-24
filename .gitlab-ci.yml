@@ -37,8 +37,6 @@ build:
   stage: deploy
   variables:
     DOMAINS: ${CI_ENVIRONMENT_SLUG}.www.samuwagen.com
-    REDIRECT_REGEX: ^http://${CI_ENVIRONMENT_SLUG}.www.samuwagen.com/(.*)
-    REDIRECT_REPLACEMENT: ^http://${CI_ENVIRONMENT_SLUG}.www.samuwagen.com/$$1
   environment:
     url: https://${CI_ENVIRONMENT_SLUG}.www.samuwagen.com
   before_script:
@@ -80,7 +78,7 @@ deploy production:
   extends: .deploy
   variables:
     DOMAINS: samuwagen.com,www.samuwagen.com
-    REDIRECT_REGEX: ^https?://samuwagen.com/(.*)
+    REDIRECT_REGEX: ^https://samuwagen.com/(.*)
     REDIRECT_REPLACEMENT: https://www.samuwagen.com/$$1
   environment:
     name: production
