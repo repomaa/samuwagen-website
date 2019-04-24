@@ -20,7 +20,7 @@ stages:
     - docker pull $IMAGE_NAME/build:$CI_COMMIT_REF_SLUG || true
     - docker pull $IMAGE_NAME:$CI_COMMIT_REF_SLUG || true
     - docker build --target build
-      --build-arg ROOT_URL=${ROOT_URL}
+      --build-arg BASE_URL=${BASE_URL}
       --cache-from $IMAGE_NAME/build:$CI_COMMIT_REF_SLUG
       -t $IMAGE_NAME/build:$CI_COMMIT_REF_SLUG
       .
@@ -37,7 +37,7 @@ stages:
 build review:
   extends: .build
   variables:
-    ROOT_URL: https://jreinert.gitlab.io/samuwagen-website/
+    BASE_URL: https://jreinert.gitlab.io/samuwagen-website/
     IMAGE_NAME: $CI_REGISTRY_IMAGE/review
   only:
     - branches
@@ -47,7 +47,7 @@ build review:
 build staging:
   extends: .build
   variables:
-    ROOT_URL: https://staging.www.samuwagen.com/
+    BASE_URL: https://staging.www.samuwagen.com/
     IMAGE_NAME: $CI_REGISTRY_IMAGE/staging
   only:
     - master
@@ -55,7 +55,7 @@ build staging:
 build production:
   extends: .build
   variables:
-    ROOT_URL: https://www.samuwagen.com/
+    BASE_URL: https://www.samuwagen.com/
     IMAGE_NAME: $CI_REGISTRY_IMAGE/production
   only:
     - master
