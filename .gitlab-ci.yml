@@ -1,0 +1,90 @@
+stages:
+  - build
+  - deploy
+
+.docker:
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+  tags:
+    - docker
+
+build:
+  stage: build
+  extends: .docker
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/build:$CI_COMMIT_REF_SLUG || true
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG || true
+    - docker build --target build
+      --cache-from $CI_REGISTRY_IMAGE/build:$CI_COMMIT_REF_SLUG
+      -t $CI_REGISTRY_IMAGE/build:$CI_COMMIT_REF_SLUG
+      .
+    - docker push $CI_REGISTRY_IMAGE/build:$CI_COMMIT_REF_SLUG
+    - docker build --target server
+      --cache-from $CI_REGISTRY_IMAGE/build:$CI_COMMIT_REF_SLUG
+      --cache-from $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+      -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+      -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+      .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+
+.deploy:
+  stage: deploy
+  variables:
+    DOMAINS: ${CI_ENVIRONMENT_SLUG}.www.samuwagen.com
+    REDIRECT_REGEX: ^http://${CI_ENVIRONMENT_SLUG}.www.samuwagen.com/(.*)
+    REDIRECT_REPLACEMENT: ^http://${CI_ENVIRONMENT_SLUG}.www.samuwagen.com/$$1
+  environment:
+    url: https://${CI_ENVIRONMENT_SLUG}.www.samuwagen.com
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker stack deploy --with-registry-auth -c docker-compose.yml samuwagen-${CI_ENVIRONMENT_SLUG}
+  tags:
+    - deploy
+
+pages:
+  stage: deploy
+  extends: .docker
+  environment:
+    name: review/${CI_COMMIT_REF_NAME}
+    url: https://jreinert.gitlab.io/samuwagen-website
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/build:$CI_COMMIT_REF_SLUG
+    - CONTAINER=$(docker create $CI_REGISTRY_IMAGE/build:$CI_COMMIT_REF_SLUG)
+    - docker cp $CONTAINER:/build ./public
+    - docker rm $CONTAINER
+  artifacts:
+    paths:
+      - public
+  only:
+    - branches
+  except:
+    - master
+
+deploy staging:
+  extends: .deploy
+  environment:
+    name: staging
+  only:
+    - master
+
+deploy production:
+  extends: .deploy
+  variables:
+    DOMAINS: samuwagen.com,www.samuwagen.com
+    REDIRECT_REGEX: ^https?://samuwagen.com/(.*)
+    REDIRECT_REPLACEMENT: https://samuwagen.com/$$1
+  environment:
+    name: production
+    url: https://www.samuwagen.com
+  when: manual
+  only:
+    - master

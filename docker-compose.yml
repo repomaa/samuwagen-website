@@ -1,0 +1,20 @@
+version: '3.6'
+services:
+  server:
+    image: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
+    networks:
+      - web
+    deploy:
+      replicas: ${REPLICAS:-1}
+      labels:
+        traefik.frontend.rule: Host:${DOMAINS}
+        traefik.frontend.redirect.regex: ${REDIRECT_REGEX}
+        traefik.frontend.redirect.replacement: ${REDIRECT_REPLACEMENT}
+        traefik.frontend.redirect.permanent: true
+        traefik.basic.port: 80
+        traefik.docker.network: web
+        traefik.enable: true
+
+networks:
+  web:
+    external: true
