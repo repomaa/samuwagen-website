@@ -1,11 +1,8 @@
 FROM klakegg/hugo AS build
-COPY config.yaml /src/
-COPY content /src/content
-COPY layouts /src/layouts
-COPY themes /src/themes
+COPY ./ /src/
 
 ARG BASE_URL
-RUN HUGO_BASEURL=${BASE_URL} hugo -d /build
+RUN HUGO_BASEURL=${BASE_URL} hugo -v -d /build
 
 FROM nginx AS server
 RUN rm -r /usr/share/nginx/html/*
