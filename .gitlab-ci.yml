@@ -81,7 +81,7 @@ deploy production:
   variables:
     DOMAINS: samuwagen.com,www.samuwagen.com
     REDIRECT_REGEX: ^https?://samuwagen.com/(.*)
-    REDIRECT_REPLACEMENT: https://samuwagen.com/$$1
+    REDIRECT_REPLACEMENT: https://www.samuwagen.com/$$1
   environment:
     name: production
     url: https://www.samuwagen.com
