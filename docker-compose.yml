@@ -8,7 +8,7 @@ services:
       replicas: ${REPLICAS:-1}
       labels:
         traefik.frontend.rule: Host:${DOMAINS}
-        traefik.frontend.redirect.regex: ${REDIRECT_REGEX:-^invalid}
+        traefik.frontend.redirect.regex: ${REDIRECT_REGEX}
         traefik.frontend.redirect.replacement: ${REDIRECT_REPLACEMENT}
         traefik.frontend.redirect.permanent: 'true'
         traefik.basic.port: 80
