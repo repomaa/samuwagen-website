@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>SamuWagen</title>
-	</head>
-	<body>
-		{{ partial "menu.html" . }}
-		{{ .Content }}
-	</body>
-</html>
+{{ define "main" }}
+  <article>
+    <section>
+      {{ .Content }}
+    </section>
+  </article>
+{{ end }}

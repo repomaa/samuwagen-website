@@ -1,20 +1,10 @@
 baseURL: https://www.samuwagen.com/
-DefaultcontentLanguage: fi
+languageCode: en-us
 copyright: SamuWagen
 title: SamuWagen
 sectionPagesMenu: main
-theme: ananake
+theme: simplicity
 disableKinds:
   - taxonomy
   - taxonomyTerm
-
-languages:
-  fi:
-    languageName: Suomi
-    weight: 1
-  en:
-    languageName: English
-    weight: 2
-  de:
-    languageName: Deutsch
-    weight: 3
+enableRobotsTXT: true
