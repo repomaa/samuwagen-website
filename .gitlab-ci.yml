@@ -66,6 +66,8 @@ build production:
   stage: deploy
   variables:
     DOMAINS: ${CI_ENVIRONMENT_SLUG}.www.samuwagen.com
+    REDIRECT_REGEX: ^http://invalid
+    REDIRECT_REPLACEMENT: https://invalid
   environment:
     url: https://${CI_ENVIRONMENT_SLUG}.www.samuwagen.com
   before_script:
