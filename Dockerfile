@@ -4,7 +4,8 @@ COPY content /src/content
 COPY layouts /src/layouts
 COPY themes /src/themes
 
-RUN hugo -d /build
+ARG BASE_URL
+RUN HUGO_BASE_URL=${BASE_URL} hugo -d /build
 
 FROM nginx AS server
 RUN rm -r /usr/share/nginx/html/*

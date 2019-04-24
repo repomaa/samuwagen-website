@@ -1,7 +1,7 @@
 version: '3.6'
 services:
   server:
-    image: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
+    image: ${IMAGE_NAME}:${CI_COMMIT_SHA}
     networks:
       - web
     deploy:
