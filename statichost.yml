@@ -1,0 +1,5 @@
+# statichost.eu build configuration
+# https://www.statichost.eu/docs/build-config/
+image: hugomods/hugo:0.165.0
+command: hugo --baseURL https://www.samuwagen.com/
+public: public
